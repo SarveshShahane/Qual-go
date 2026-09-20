@@ -3,6 +3,16 @@ uvicorn
 
 sqlalchemy
 psycopg2-binary
+aiosqlite
+asyncpg
+
+
 python-dotenv
 
 alembic
+
+
+bcrypt
+
+email-validator 
+pyjwt
