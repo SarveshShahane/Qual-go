@@ -16,3 +16,6 @@ bcrypt
 
 email-validator 
 pyjwt
+
+# test
+pytest
