@@ -321,6 +321,53 @@ class TestAuthServiceLogout(unittest.IsolatedAsyncioTestCase):
             mock_revoke.assert_not_awaited()
 
 
+class TestAuthServiceRefreshTokens(unittest.IsolatedAsyncioTestCase):
+    async def test_refresh_tokens_missing_token_raises(self):
+        mock_session = AsyncMock()
+        service = AuthService(mock_session)
+        with self.assertRaises(InvalidCredentialsException):
+            await service.refresh_tokens(None)
+
+    async def test_refresh_tokens_invalid_jwt_raises(self):
+        mock_session = AsyncMock()
+        service = AuthService(mock_session)
+        with self.assertRaises(InvalidCredentialsException):
+            await service.refresh_tokens("not-a-valid-jwt")
+
+    async def test_refresh_tokens_success(self):
+        user_id = 99
+        email = "refresh_user@qual.dev"
+        token, jti, expire = create_refresh_token(user_id=user_id)
+
+        user = UserModel(id=user_id, username="refresh_user", email=email, password="hash")
+        db_token = RefreshToken(
+            id=1,
+            user_id=user_id,
+            jti=jti,
+            token_hash=hash_token(token),
+            expires_at=expire,
+            revoked_at=None,
+        )
+
+        mock_session = AsyncMock()
+        mock_session.add = MagicMock()
+        # Mock finding the refresh token, then finding the user
+        result1 = MagicMock()
+        result1.scalar_one_or_none.return_value = db_token
+        result2 = MagicMock()
+        result2.scalar_one_or_none.return_value = user
+        mock_session.execute.side_effect = [result1, result2]
+
+        service = AuthService(mock_session)
+        new_access, new_refresh, returned_user = await service.refresh_tokens(token)
+
+        self.assertIsInstance(new_access, str)
+        self.assertIsInstance(new_refresh, str)
+        self.assertEqual(returned_user.id, user_id)
+        self.assertIsNotNone(db_token.revoked_at)
+        mock_session.commit.assert_awaited()
+
+
 class TestAuthSchemas(unittest.TestCase):
     def test_register_payload_valid(self):
         payload = RegisterRequestPayload(

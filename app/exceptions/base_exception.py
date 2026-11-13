@@ -19,15 +19,32 @@ class BaseException(Exception):
 BaseAppException = BaseException
 
 
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+
+
 async def base_exception_handler(request: Request, exc: BaseException) -> JSONResponse:
     content = {
         "success": False,
+        "error": exc.message,
         "message": exc.message,
     }
     if exc.detail is not None:
-        content["detail"] = exc.detail
+        content["detail"] = jsonable_encoder(exc.detail)
     status_code = getattr(exc, "status", getattr(exc, "status_code", status.HTTP_400_BAD_REQUEST))
     return JSONResponse(status_code=status_code, content=content)
+
+
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "success": False,
+            "error": "Invalid request payload",
+            "message": "Invalid request payload",
+            "detail": jsonable_encoder(exc.errors()),
+        },
+    )
 
 
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
@@ -35,6 +52,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "success": False,
+            "error": "Internal server error",
             "message": "Internal server error",
             "detail": str(exc),
         },

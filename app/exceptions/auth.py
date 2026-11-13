@@ -52,9 +52,23 @@ class UserNotFoundException(BaseAuthException):
         )
 
 
+class CSRFValidationException(BaseAuthException):
+    def __init__(
+        self,
+        message: str = "Invalid or missing CSRF token",
+        detail: any = None,
+    ):
+        super().__init__(
+            message=message,
+            status=status.HTTP_403_FORBIDDEN,
+            detail=detail,
+        )
+
+
 async def auth_exception_handler(request: Request, exc: BaseAuthException) -> JSONResponse:
     content = {
         "success": False,
+        "error": exc.message,
         "message": exc.message,
     }
     if exc.detail is not None:
