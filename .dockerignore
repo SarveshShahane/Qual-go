@@ -1,0 +1,74 @@
+# ==============================================================================
+# QUALGO Backend - Docker Build Ignore
+# ==============================================================================
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Secrets & local environment variables
+# (Never bake secrets into container images; supply via runtime/compose)
+.env
+.env.*
+!.env.example
+
+# Test suite, reports & caches
+tests/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Linters & type check caches
+.mypy_cache/
+.ruff_cache/
+
+# Local databases & storage
+*.db
+*.sqlite
+*.sqlite3
+
+# Local logs
+logs/
+*.log
+
+# Local development scratch & materials
+scratch/
+material/
+docs/
+tmp/
+temp/
+*.tmp
+*.bak
+README.md
+
+# Dockerfiles & Compose files
+Dockerfile
+Dockerfile.*
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# IDE & OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
