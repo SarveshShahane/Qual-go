@@ -19,3 +19,18 @@ pyjwt
 
 # test
 pytest
+pytest-asyncio
+httpx
+
+# quantum simulation & execution backends
+qiskit
+qiskit-aer
+cirq
+pennylane
+qbraid
+ply
+
+# AI Tutor LLM layer
+langchain
+langchain-core
+langchain-groq
