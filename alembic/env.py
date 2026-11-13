@@ -11,6 +11,12 @@ from app.database.sql.db import Base
 # Import all models so that Base.metadata has all table definitions for autogenerate
 from app.database.sql.models.user import User  # noqa: F401
 from app.database.sql.models.refresh_token import RefreshToken  # noqa: F401
+from app.database.sql.models.course import (  # noqa: F401
+    Module,
+    Chapter,
+    Topic,
+    UserTopicProgress,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
